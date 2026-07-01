@@ -1,0 +1,215 @@
+
+<h2 class="sr-only">Project Reset — integrated daily schedule for both tracks</h2>
+
+<style>
+  .sched { font-family: var(--font-sans); padding: 1rem 0; }
+  .sched-header { margin-bottom: 1.5rem; }
+  .sched-header h1 { font-size: 18px; font-weight: 500; color: var(--text-primary); margin: 0 0 4px; }
+  .sched-header p { font-size: 13px; color: var(--text-muted); margin: 0; }
+  .day-tabs { display: flex; gap: 6px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .day-tab { font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: var(--radius); border: 0.5px solid var(--border-strong); cursor: pointer; background: var(--surface-2); color: var(--text-secondary); transition: all 0.15s; }
+  .day-tab.active { background: var(--fill-accent); color: var(--on-accent); border-color: var(--fill-accent); }
+  .day-tab:hover:not(.active) { background: var(--surface-1); }
+  .phase-note { font-size: 12px; color: var(--text-muted); margin-bottom: 1.25rem; padding: 8px 12px; background: var(--surface-1); border-radius: var(--radius); border-left: 3px solid var(--border-accent); }
+  .timeline { display: flex; flex-direction: column; gap: 3px; }
+  .row { display: grid; grid-template-columns: 90px 1fr; gap: 10px; align-items: stretch; min-height: 40px; }
+  .time-col { font-size: 12px; color: var(--text-muted); text-align: right; padding-top: 11px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .block { border-radius: 8px; padding: 9px 12px; display: flex; flex-direction: column; justify-content: center; }
+  .block-label { font-size: 13px; font-weight: 500; line-height: 1.3; }
+  .block-sub { font-size: 11px; margin-top: 2px; line-height: 1.4; opacity: 0.85; }
+  .b-routine { background: var(--surface-1); border: 0.5px solid var(--border); }
+  .b-routine .block-label { color: var(--text-secondary); }
+  .b-routine .block-sub { color: var(--text-muted); }
+  .b-prayer { background: #E1F5EE; border: 0.5px solid #5DCAA5; }
+  .b-prayer .block-label { color: #085041; }
+  .b-varc { background: #EEEDFE; border: 0.5px solid #7F77DD; }
+  .b-varc .block-label { color: #3C3489; }
+  .b-varc .block-sub { color: #534AB7; }
+  .b-dilr { background: #FAEEDA; border: 0.5px solid #EF9F27; }
+  .b-dilr .block-label { color: #412402; }
+  .b-dilr .block-sub { color: #854F0B; }
+  .b-quant { background: #FAECE7; border: 0.5px solid #D85A30; }
+  .b-quant .block-label { color: #4A1B0C; }
+  .b-quant .block-sub { color: #993C1D; }
+  .b-zone1 { background: #E6F1FB; border: 0.5px solid #378ADD; }
+  .b-zone1 .block-label { color: #042C53; }
+  .b-zone1 .block-sub { color: #185FA5; }
+  .b-zone2 { background: #EAF3DE; border: 0.5px solid #639922; }
+  .b-zone2 .block-label { color: #173404; }
+  .b-zone2 .block-sub { color: #3B6D11; }
+  .b-zone3 { background: #FBEAF0; border: 0.5px solid #D4537E; }
+  .b-zone3 .block-label { color: #4B1528; }
+  .b-zone3 .block-sub { color: #993556; }
+  .b-exercise { background: #F1EFE8; border: 0.5px solid #888780; }
+  .b-exercise .block-label { color: #2C2C2A; }
+  .b-exercise .block-sub { color: #5F5E5A; }
+  .b-break { background: var(--surface-1); border: 0.5px dashed var(--border-strong); }
+  .b-break .block-label { color: var(--text-muted); }
+  .b-log { background: #FCEBEB; border: 0.5px solid #E24B4A; }
+  .b-log .block-label { color: #501313; }
+  .b-log .block-sub { color: #A32D2D; }
+  .b-free { background: var(--surface-1); border: 0.5px solid var(--border); }
+  .b-free .block-label { color: var(--text-muted); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 1.5rem; padding-top: 1rem; border-top: 0.5px solid var(--border); }
+  .leg-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+  .leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+  .summary-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 8px; margin-bottom: 1.25rem; }
+  .sum-card { background: var(--surface-1); border-radius: var(--radius); padding: 10px 12px; border: 0.5px solid var(--border); }
+  .sum-label { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+  .sum-val { font-size: 18px; font-weight: 500; color: var(--text-primary); }
+  .sum-unit { font-size: 11px; color: var(--text-secondary); }
+  .seasonal-note { font-size: 11px; color: var(--text-muted); margin-top: 1rem; padding: 8px 12px; background: var(--surface-1); border-radius: var(--radius); border-left: 3px solid var(--border-warning); }
+</style>
+
+<div class="sched">
+  <div class="sched-header">
+    <h1>Project Reset — daily schedule</h1>
+    <p>Mumbai · Jul 1 – Nov 28, 2026 · Fixed skeleton, changing subject</p>
+  </div>
+
+  <div class="day-tabs" id="dayTabs"></div>
+
+  <div class="summary-bar" id="summaryBar"></div>
+
+  <div class="phase-note" id="phaseNote"></div>
+
+  <div class="timeline" id="timeline"></div>
+
+  <div class="seasonal-note">
+    Seasonal adjustment — do on the 1st of each month: check prayer app for Mumbai. Asr moves from 4:45 PM (Jul) → 3:40 PM (Nov), falling inside Quant by Oct — pause, pray, resume. Maghrib moves 7:30 PM (Jul) → 6:00 PM (Nov), interrupting DILR on Wed/Fri/Sun — split DILR into two sub-blocks around it.
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot" style="background:#AFA9EC;"></div>VARC</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#FAC775;"></div>DILR</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#F0997B;"></div>Quant</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#85B7EB;"></div>Zone 1 — skill build</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#97C459;"></div>Zone 2 — applications</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#ED93B1;"></div>Zone 3 — LinkedIn</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#B4B2A9;"></div>Exercise</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#9FE1CB;"></div>Prayer</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#F7C1C1;"></div>Daily log</div>
+  </div>
+</div>
+
+<script>
+const days = [
+  { id: 'mon', label: 'Monday', type: 'monday' },
+  { id: 'tue', label: 'Tue/Thu/Sat', type: 'varc' },
+  { id: 'wed', label: 'Wed/Fri/Sun', type: 'dilr' },
+];
+
+const summaries = {
+  monday: [
+    { label: 'Track C', val: '0', unit: 'hrs' },
+    { label: 'Track J', val: '3', unit: 'hrs' },
+    { label: 'Exercise', val: '1', unit: 'hr' },
+    { label: 'Sleep', val: '8', unit: 'hrs' },
+  ],
+  varc: [
+    { label: 'VARC', val: '2.5', unit: 'hrs' },
+    { label: 'Quant', val: '2.5', unit: 'hrs' },
+    { label: 'Track J', val: '3.5', unit: 'hrs' },
+    { label: 'Sleep', val: '8', unit: 'hrs' },
+  ],
+  dilr: [
+    { label: 'DILR', val: '2.5', unit: 'hrs' },
+    { label: 'Quant', val: '2.5', unit: 'hrs' },
+    { label: 'Track J', val: '3.5', unit: 'hrs' },
+    { label: 'Sleep', val: '8', unit: 'hrs' },
+  ],
+};
+
+const phases = {
+  monday: 'Monday — CAT rest day. All 3 hrs go to Track J admin. Zone 1 shifts change by phase — see Track J document.',
+  varc: 'VARC days (Tue/Thu/Sat) — fixed skeleton: VARC 10–12:30, exercise 12:30–1:30, Dhuhr+lunch 1:10–2:00, Quant 2:00–4:30, Track J evening 5:00–9:00, wind-down, sleep 11:30. Only subject changes across phases.',
+  dilr: 'DILR days (Wed/Fri/Sun) — same fixed skeleton as VARC days. DILR and Quant both sit in afternoon peak (your slow-starter warm-up period). Track J evening is identical every day.',
+};
+
+const schedules = {
+  monday: [
+    { time: '7:30', dur: '2h', label: 'Morning routine', sub: 'Wake, freshen, breakfast — no study content', cls: 'b-routine' },
+    { time: '9:30', dur: '30m', label: 'Weekly review + planning', sub: 'Review tracker, set 3 priorities for the week', cls: 'b-routine' },
+    { time: '10:00', dur: '1h', label: 'LinkedIn batch', sub: 'Write/schedule 2-3 posts, reply to DMs, comments', cls: 'b-zone3' },
+    { time: '11:00', dur: '1h', label: 'Cold mails + follow-ups', sub: 'Send 1–3 cold mails, ~10 recruiter DMs, update application tracker', cls: 'b-zone2' },
+    { time: '12:00', dur: '1h', label: 'Exercise — 1 hr', sub: 'Full 1-hr block — gym, walk, sport (flexible time today)', cls: 'b-exercise' },
+    { time: '1:00', dur: '10m', label: 'Freshen up', sub: '', cls: 'b-break' },
+    { time: '1:10', dur: '20m', label: 'Dhuhr namaz', sub: '', cls: 'b-prayer' },
+    { time: '1:30', dur: '30m', label: 'Lunch', sub: '', cls: 'b-routine' },
+    { time: '2:00', dur: '1h', label: 'Zone 1 — GitHub + skill review', sub: 'Review week\'s learning gaps, push project updates, clean READMEs', cls: 'b-zone1' },
+    { time: '3:00', dur: '', label: 'Free — rest of Monday', sub: 'Family, errands, full rest from both tracks', cls: 'b-free' },
+  ],
+  varc: [
+    { time: '7:30', dur: '2h', label: 'Morning routine', sub: 'Wake, freshen, breakfast — no study content', cls: 'b-routine' },
+    { time: '9:30', dur: '30m', label: 'Planning + yesterday review', sub: 'Review error log entries, set today\'s 3 priorities', cls: 'b-routine' },
+    { time: '10:00', dur: '2h 30m', label: 'VARC session', sub: '30m active reading (Aeon/editorials) + 5-line summary → 90m RC × 2-3 passages (read+attempt+review) → 30m VA questions × 10-15', cls: 'b-varc' },
+    { time: '12:30', dur: '1h', label: 'Exercise — 1 hr', sub: 'Walk, gym, yoga — natural midday energy reset before Quant', cls: 'b-exercise' },
+    { time: '1:30', dur: '20m', label: 'Dhuhr namaz + freshen', sub: '', cls: 'b-prayer' },
+    { time: '1:50', dur: '10m', label: 'Transition', sub: '', cls: 'b-break' },
+    { time: '2:00', dur: '2h 30m', label: 'Quant session', sub: '35m concept lecture (Ravi Prakash) → 95m practice 20-25 Qs → 20m error log entries', cls: 'b-quant' },
+    { time: '4:30', dur: '30m', label: 'Break + Asr namaz', sub: 'Tea, short rest — Asr ~4:45 PM Jul (moves to ~3:40 by Nov — adjust)', cls: 'b-prayer' },
+    { time: '5:00', dur: '1h 45m', label: 'Zone 1 — skill build', sub: '(Phase 1: 105m SQL/Python/Power BI · Phase 2: 60m · Phase 3: 30m)', cls: 'b-zone1' },
+    { time: '6:45', dur: '15m', label: 'Zone 3 — LinkedIn', sub: 'Comments, connections — Phase 1-2 only, drops to 0 in Phase 3', cls: 'b-zone3' },
+    { time: '7:00', dur: '20m', label: 'Maghrib namaz', sub: '~7:30 PM Jul → ~6:00 PM Nov — adjust evening blocks by Oct', cls: 'b-prayer' },
+    { time: '7:20', dur: '1h 30m', label: 'Zone 2 — applications', sub: 'Phase 1: 90m · Phase 2: 135m (eat into Zone 1 reduction) · 20-40 apps, cold mails, recruiter DMs', cls: 'b-zone2' },
+    { time: '8:50', dur: '20m', label: 'Isha namaz', sub: '~8:50 PM Jul → ~7:15 PM Nov', cls: 'b-prayer' },
+    { time: '9:10', dur: '40m', label: 'Dinner', sub: '', cls: 'b-routine' },
+    { time: '9:50', dur: '20m', label: 'Daily log', sub: 'Hours logged vs planned (5m) · error log entries (5m) · tomorrow\'s 3 priorities (5m) · app tracker update (5m)', cls: 'b-log' },
+    { time: '10:10', dur: '1h 20m', label: 'Wind down', sub: 'No study, no applications — reading, family, music', cls: 'b-free' },
+    { time: '11:30', dur: '', label: 'Sleep → 7:30 AM = 8 hrs', sub: '', cls: 'b-routine' },
+  ],
+  dilr: [
+    { time: '7:30', dur: '2h', label: 'Morning routine', sub: 'Wake, freshen, breakfast — no study content', cls: 'b-routine' },
+    { time: '9:30', dur: '30m', label: 'Planning + yesterday review', sub: 'Review error log entries, set today\'s 3 priorities', cls: 'b-routine' },
+    { time: '10:00', dur: '2h 30m', label: 'DILR session', sub: '40m Set 1 (Rodha) → 40m Set 2 → 35m Set 3 (partial if needed) → 30m consolidated analysis + set-type log', cls: 'b-dilr' },
+    { time: '12:30', dur: '1h', label: 'Exercise — 1 hr', sub: 'Same midday slot as VARC days — consistent habit', cls: 'b-exercise' },
+    { time: '1:30', dur: '20m', label: 'Dhuhr namaz + freshen', sub: '', cls: 'b-prayer' },
+    { time: '1:50', dur: '10m', label: 'Transition', sub: '', cls: 'b-break' },
+    { time: '2:00', dur: '2h 30m', label: 'Quant session', sub: '35m concept lecture (Ravi Prakash) → 95m practice 20-25 Qs → 20m error log entries', cls: 'b-quant' },
+    { time: '4:30', dur: '30m', label: 'Break + Asr namaz', sub: 'Tea, short rest — Asr ~4:45 PM Jul (moves to ~3:40 by Nov — adjust)', cls: 'b-prayer' },
+    { time: '5:00', dur: '1h 45m', label: 'Zone 1 — skill build', sub: '(Phase 1: 105m · Phase 2: 60m · Phase 3: 30m)', cls: 'b-zone1' },
+    { time: '6:45', dur: '15m', label: 'Zone 3 — LinkedIn', sub: 'Comments, connections — Phase 1-2 only', cls: 'b-zone3' },
+    { time: '7:00', dur: '20m', label: 'Maghrib namaz', sub: '~7:30 PM Jul → ~6:00 PM Nov — adjust by Oct', cls: 'b-prayer' },
+    { time: '7:20', dur: '1h 30m', label: 'Zone 2 — applications', sub: 'Phase 1: 90m · Phase 2: 135m · 20-40 apps, cold mails, recruiter DMs', cls: 'b-zone2' },
+    { time: '8:50', dur: '20m', label: 'Isha namaz', sub: '~8:50 PM Jul → ~7:15 PM Nov', cls: 'b-prayer' },
+    { time: '9:10', dur: '40m', label: 'Dinner', sub: '', cls: 'b-routine' },
+    { time: '9:50', dur: '20m', label: 'Daily log', sub: 'Hours logged (5m) · error log (5m) · tomorrow\'s 3 priorities (5m) · app tracker (5m)', cls: 'b-log' },
+    { time: '10:10', dur: '1h 20m', label: 'Wind down', sub: 'No study, no applications', cls: 'b-free' },
+    { time: '11:30', dur: '', label: 'Sleep → 7:30 AM = 8 hrs', sub: '', cls: 'b-routine' },
+  ],
+};
+
+let current = 'varc';
+
+function render() {
+  const tabs = document.getElementById('dayTabs');
+  tabs.innerHTML = days.map(d =>
+    `<div class="day-tab ${d.type === current ? 'active' : ''}" onclick="switchDay('${d.type}')">${d.label}</div>`
+  ).join('');
+
+  const bar = document.getElementById('summaryBar');
+  bar.innerHTML = summaries[current].map(s =>
+    `<div class="sum-card"><div class="sum-label">${s.label}</div><div class="sum-val">${s.val} <span class="sum-unit">${s.unit}</span></div></div>`
+  ).join('');
+
+  document.getElementById('phaseNote').textContent = phases[current];
+
+  const tl = document.getElementById('timeline');
+  tl.innerHTML = schedules[current].map(row =>
+    `<div class="row">
+      <div class="time-col">${row.time}${row.dur ? '<br><span style="font-size:10px;opacity:0.7">' + row.dur + '</span>' : ''}</div>
+      <div class="block ${row.cls}">
+        <div class="block-label">${row.label}</div>
+        ${row.sub ? `<div class="block-sub">${row.sub}</div>` : ''}
+      </div>
+    </div>`
+  ).join('');
+}
+
+function switchDay(type) {
+  current = type;
+  render();
+}
+
+render();
+</script>
