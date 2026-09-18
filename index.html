@@ -41,9 +41,7 @@
     <div class="leg-item"><div class="leg-dot" style="background:#CECBF6;"></div>VARC</div>
     <div class="leg-item"><div class="leg-dot" style="background:#FAC775;"></div>DILR</div>
     <div class="leg-item"><div class="leg-dot" style="background:#F0997B;"></div>Quant</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#85B7EB;"></div>Zone 1 — skill build</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#97C459;"></div>Zone 2 — applications</div>
-    <div class="leg-item"><div class="leg-dot" style="background:#ED93B1;"></div>Zone 3 — LinkedIn</div>
+    <div class="leg-item"><div class="leg-dot" style="background:#85B7EB;"></div>Mock</div>
     <div class="leg-item"><div class="leg-dot" style="background:#F7C1C1;"></div>Nap</div>
   </div>
 </div>
@@ -55,92 +53,63 @@ const colors = {
   varc:   { bg: '#EEEDFE', text: '#3C3489' },
   dilr:   { bg: '#FAEEDA', text: '#633806' },
   quant:  { bg: '#FAECE7', text: '#4A1B0C' },
-  zone1:  { bg: '#E6F1FB', text: '#042C53' },
-  zone2:  { bg: '#EAF3DE', text: '#173404' },
-  zone3:  { bg: '#FBEAF0', text: '#4B1528' },
+  mock:  { bg: '#E6F1FB', text: '#042C53' },
   nap:    { bg: '#FCEBEB', text: '#501313' },
   routine:{ bg: '#F5F5F5', text: '#444441' },
   free:   { bg: '#FAFAFA', text: '#888780' },
 };
 
 const days = [
-  { id: 'mon', label: 'Monday' },
-  { id: 'varc', label: 'Tue / Thu / Sat' },
-  { id: 'dilr', label: 'Wed / Fri / Sun' },
+  { id: 'mock', label: 'Mock/ Wed / Sat' },
+  { id: 'daily', label: 'Daily' },
 ];
 
 const summaries = {
-  mon: [ { l: 'Track J', v: '3', u: 'hrs' }, { l: 'Exercise', v: '1', u: 'hr' }, { l: 'Nap', v: '1', u: 'hr' } ],
-  varc: [ { l: 'VARC', v: '2.5', u: 'hrs' }, { l: 'Quant', v: '2.5', u: 'hrs' }, { l: 'Track J', v: '3.5', u: 'hrs' }, { l: 'Nap', v: '1', u: 'hr' } ],
-  dilr: [ { l: 'DILR', v: '2.5', u: 'hrs' }, { l: 'Quant', v: '2.5', u: 'hrs' }, { l: 'Track J', v: '3.5', u: 'hrs' }, { l: 'Nap', v: '1', u: 'hr' } ],
+  mock: [ { l: 'Mock', v: '3', u: 'hrs' }, { l: 'VARC', v: '1', u: 'hrs' }, { l: 'Quant', v: '3', u: 'hrs' }, { l: 'DILR', v: '2', u: 'hrs' } , { l: 'Nap', v: '1', u: 'hr' } ],
+  daily: [ { l: 'VARC', v: '2', u: 'hrs' }, { l: 'Quant', v: '3', u: 'hrs' }, { l: 'DILR', v: '3', u: 'hrs' }, { l: 'Nap', v: '1', u: 'hr' } ],
 };
 
 const schedules = {
-  mon: [
+  mock: [
     { t: '11:30 PM', d: '6h', l: 'Main sleep', s: '', c: 'sleep' },
     { t: '5:30 AM', d: '25m', l: 'Fajr', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
     { t: '5:55 AM', d: '1h 50m', l: 'Second sleep', s: '', c: 'sleep' },
     { t: '7:45 AM', d: '90m', l: 'Wake, freshen, breakfast', s: '', c: 'routine' },
-    { t: '9:15 AM', d: '1h', l: 'LinkedIn batch', s: 'Write/schedule posts, reply to DMs', c: 'zone3' },
-    { t: '10:15 AM', d: '1h', l: 'Cold mails + recruiter follow-ups', s: '', c: 'zone2' },
-    { t: '11:15 AM', d: '1h', l: 'Exercise', s: '', c: 'routine' },
-    { t: '12:15 PM', d: '45m', l: 'Lunch + Dhuhr', s: 'Dhuhr window 12:45–4:15 — flexible', c: 'routine' },
-    { t: '1:00 PM', d: '1h', l: 'Skill review + GitHub', s: 'Track J total = 3 hrs ✓', c: 'zone1' },
-    { t: '2:00 PM', d: '1h', l: 'Nap', s: '', c: 'nap' },
-    { t: '3:00 PM', d: '2h 15m', l: 'Free / rest', s: '', c: 'free' },
-    { t: '5:15 PM', d: '25m', l: 'Asr', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
-    { t: '5:40 PM', d: '1h 5m', l: 'Free / rest', s: '', c: 'free' },
+    { t: '9:15 AM', d: '1h', l: 'VARC session', s: 'Reading + summary → RC passages → VA questions', c: 'varc' },
+    { t: '10:15 AM', d: '2h', l: 'Mock', s: '', c: 'mock' },
+    { t: '12:15 PM', d: '15m', l: 'Break', s: '', c: 'free'},
+    { t: '12:30 PM', d: '1h', l: 'Review Mock', s: '', c: 'mock'},
+    { t: '1:30 PM', d: '1h', l: 'Lunch + Dhuhr', s: 'Dhuhr window opens 12:45 — flexible', c: 'routine' },
+    { t: '2:30 PM', d: '1h', l: 'Nap', s: '', c: 'nap' },
+    { t: '3:30 PM', d: '1h 30m', l: 'Quant block A', s: 'Quant total = 1.5 hrs ✓', c: 'quant' },
+    { t: '5:00 PM', d: '45m', l: 'Asr', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
+    { t: '5:45 PM', d: '1h', l: 'Quant block B', s: 'Quant total = 2.5 hrs ✓', c: 'quant'},
     { t: '6:45 PM', d: '45m', l: 'Maghrib', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
-    { t: '7:30 PM', d: '1h 30m', l: 'Free / rest', s: '', c: 'free' },
-    { t: '9:00 PM', d: '45m', l: 'Dinner', s: '', c: 'routine' },
-    { t: '9:45 PM', d: '15m', l: 'Daily log', s: '', c: 'routine' },
-    { t: '10:00 PM', d: '1h 30m', l: 'Wind down', s: 'Isha window 8:45–11:50 fits anywhere here', c: 'free' },
+    { t: '7:30 PM', d: '30m', l: 'Quant block C', s: 'Quant total = 3 hrs ✓', c: 'quant' },
+    { t: '8:00 PM', d: '1h', l: 'DILR bock A', s: '', c: 'dilr' },
+    { t: '9:00 PM', d: '30m', l: 'Dinner', s: '', c: 'routine' },
+    { t: '9:30 PM', d: '1h', l: 'DILR bock B', s: '', c: 'dilr' },
+    { t: '10:30 PM', d: '1h ', l: 'Daily log + wind down', s: 'Isha window 8:45–11:50 fits anywhere here', c: 'free' },
     { t: '11:30 PM', d: '', l: 'Sleep', s: '', c: 'sleep' },
   ],
-  varc: [
+  daily: [
     { t: '11:30 PM', d: '6h', l: 'Main sleep', s: '', c: 'sleep' },
     { t: '5:30 AM', d: '25m', l: 'Fajr', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
     { t: '5:55 AM', d: '1h 50m', l: 'Second sleep', s: '', c: 'sleep' },
     { t: '7:45 AM', d: '90m', l: 'Wake, freshen, breakfast', s: '', c: 'routine' },
-    { t: '9:15 AM', d: '2h 30m', l: 'VARC session', s: 'Reading + summary → RC passages → VA questions', c: 'varc' },
-    { t: '11:45 AM', d: '1h', l: 'Exercise', s: '', c: 'routine' },
-    { t: '12:45 PM', d: '45m', l: 'Lunch + Dhuhr', s: 'Dhuhr window opens 12:45 — flexible', c: 'routine' },
-    { t: '1:30 PM', d: '1h', l: 'Quant block A', s: '', c: 'quant' },
+    { t: '9:15 AM', d: '2h', l: 'VARC session', s: 'Reading + summary → RC passages → VA questions', c: 'varc' },
+    { t: '11:15 AM', d: '45m', l: 'Exercise', s: '', c: 'routine' },
+    { t: '12:00 PM', d: '1h 30m', l: 'Quant block A', s: '', c: 'quant'},
+    { t: '1:30 PM', d: '1h', l: 'Lunch + Dhuhr', s: 'Dhuhr window opens 12:45 — flexible', c: 'routine' },
     { t: '2:30 PM', d: '1h', l: 'Nap', s: '', c: 'nap' },
-    { t: '3:30 PM', d: '1h 30m', l: 'Quant block B', s: 'Quant total = 2.5 hrs ✓', c: 'quant' },
-    { t: '5:00 PM', d: '15m', l: 'Zone 3 — LinkedIn', s: '', c: 'zone3' },
-    { t: '5:15 PM', d: '25m', l: 'Asr', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
-    { t: '5:40 PM', d: '30m', l: 'Quant block C', s: 'Quant total = 3 hrs ✓', c: 'quant' },
-    { t: '6:10 PM', d: '35m', l: 'Zone 1 — skill build (part 1)', s: '', c: 'zone1' },
+    { t: '3:30 PM', d: '1h 30m', l: 'Quant block B', s: 'Quant total = 3 hrs ✓', c: 'quant' },
+    { t: '5:00 PM', d: '45m', l: 'Asr', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
+    { t: '5:45 PM', d: '1h', l: 'DILR session A', s: '3 sets solved + consolidated analysis', c: 'dilr'},
     { t: '6:45 PM', d: '45m', l: 'Maghrib', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
-    { t: '7:30 PM', d: '40m', l: 'Zone 1 — skill build (part 2)', s: 'Zone 1 total = 75min ✓', c: 'zone1' },
-    { t: '8:10 PM', d: '20m', l: 'Dinner', s: '', c: 'routine' },
-    { t: '8:30 PM', d: '1h', l: 'Zone 2 — applications', s: 'Track J total = 2.5 hrs ✓', c: 'zone2' },
-    { t: '9:30 PM', d: '30m', l: 'VARC session 2', s: 'Reading + summary → RC passages → VA questions', c: 'varc' },
-    { t: '10:00 PM', d: '1h 30m', l: 'Daily log + wind down', s: 'Isha window 8:45–11:50 fits anywhere here', c: 'free' },
-    { t: '11:30 PM', d: '', l: 'Sleep', s: '', c: 'sleep' },
-  ],
-  dilr: [
-    { t: '11:30 PM', d: '6h', l: 'Main sleep', s: '', c: 'sleep' },
-    { t: '5:30 AM', d: '25m', l: 'Fajr', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
-    { t: '5:55 AM', d: '1h 50m', l: 'Second sleep', s: '', c: 'sleep' },
-    { t: '7:45 AM', d: '90m', l: 'Wake, freshen, breakfast', s: '', c: 'routine' },
-    { t: '9:15 AM', d: '2h 30m', l: 'DILR session', s: '3 sets solved + consolidated analysis', c: 'dilr' },
-    { t: '11:45 AM', d: '1h', l: 'Exercise', s: '', c: 'routine' },
-    { t: '12:45 PM', d: '45m', l: 'Lunch + Dhuhr', s: 'Dhuhr window opens 12:45 — flexible', c: 'routine' },
-    { t: '1:30 PM', d: '1h', l: 'Quant block A', s: '', c: 'quant' },
-    { t: '2:30 PM', d: '1h', l: 'Nap', s: '', c: 'nap' },
-    { t: '3:30 PM', d: '1h 30m', l: 'Quant block B', s: 'Quant total = 2.5 hrs ✓', c: 'quant' },
-    { t: '5:00 PM', d: '15m', l: 'Zone 3 — LinkedIn', s: '', c: 'zone3' },
-    { t: '5:15 PM', d: '25m', l: 'Asr', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
-    { t: '5:40 PM', d: '30m', l: 'Quant block C', s: 'Quant total = 3 hrs ✓', c: 'quant' },
-    { t: '6:10 PM', d: '35m', l: 'Zone 1 — skill build (part 1)', s: '', c: 'zone1' },
-    { t: '6:45 PM', d: '45m', l: 'Maghrib', s: 'Fixed window — nothing else scheduled', c: 'prayer' },
-    { t: '7:30 PM', d: '40m', l: 'Zone 1 — skill build (part 2)', s: 'Zone 1 total = 105 min ✓', c: 'zone1' },
-    { t: '8:10 PM', d: '20m', l: 'Dinner', s: '', c: 'routine' },
-    { t: '8:30 PM', d: '1h', l: 'Zone 2 — applications', s: 'Track J total = 2.5 hrs ✓', c: 'zone2' },
-    { t: '9:30 PM', d: '30m', l: 'DILR session-2', s: '3 sets solved + consolidated analysis', c: 'dilr' },
-    { t: '10:00 PM', d: '1h 30m', l: 'Daily log + wind down', s: 'Isha window 8:45–11:50 fits anywhere here', c: 'free' },
+    { t: '7:30 PM', d: '1h', l: 'DILR session B', s: '3 sets solved + consolidated analysis', c: 'dilr' },
+    { t: '8:30 PM', d: '45m', l: 'Dinner', s: '', c: 'routine' },
+    { t: '9:15 PM', d: '1h', l: 'DILR session C', s: 'DILR total=3 hrs', c: 'dilr' },
+    { t: '10:15 PM', d: '1h 15m', l: 'Daily log + wind down', s: 'Isha window 8:45–11:50 fits anywhere here', c: 'free' },
     { t: '11:30 PM', d: '', l: 'Sleep', s: '', c: 'sleep' },
   ],
 };
